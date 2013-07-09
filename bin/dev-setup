@@ -1,0 +1,67 @@
+#!/bin/bash
+
+echo ""
+echo "-------------------------------------------------------------------"
+echo "NOTE: This script is meant to be run in the root project directory."
+echo "-------------------------------------------------------------------"
+echo ""
+
+currentDirectory=$(pwd)
+environmentPath="$currentDirectory/env"
+isGlobalPython=$(which python | grep -c ^/bin.*$)
+
+function hasPythonVirtualEnvironment(){
+  if [ -d $environmentPath ]; then
+    return true
+  fi
+}
+
+# setup the environment by running the new python 3.3 virtual (pyvenv
+function setupEnvironment(){
+  local hasPyvenv=$(which pyvenv-3.3)
+
+  if [ -z $hasPyvenv ]; then
+    echo "Could not find pyvenv-3.3. Do you have python 3.3 or later installed?"
+    exit;
+  fi
+
+  echo "Setting up python enviroment at $environmentPath"
+   
+  if [ hasPythonVirtualEnvironment ]; then
+    echo "Directory already exists at $environmentPath. Could not create environment"
+    return 
+  fi
+
+  pyvenv-3.3 $environmentPath
+  echo "Done setting up environment"
+}
+
+
+# Install all dependent libraries 
+function installPythonLibraries(){
+  #no libraries to install for now.
+  echo "Installing python libraries"
+ 
+  if [ ! hasPythonVirtualEnvironment ]; then
+    echo "Cannot install libraries because the python virtual environment could not be found."
+    return
+  else 
+    echo "Found virtual environment for installing libraries"
+  fi
+
+  echo "Done installing python libraries"
+}
+
+setupEnvironment
+
+if [ $isGlobalPython -gt 0 ]; then
+   echo "Python found is global python."
+   # python is the global python. We need an environment base python
+   setupEnviroment
+   installPythonLibraries   
+else
+   echo "Python found is not the global python enviroment."      
+   echo "Will not setup environment"
+   installPythonLibraries
+fi
+
