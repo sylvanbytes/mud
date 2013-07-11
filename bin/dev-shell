@@ -1,19 +1,32 @@
-echo"-------------------------------"
+echo "-------------------------------"
 echo "THIS FILE SHOULD BE SOURCED!!!"
 echo "------------------------------"
 echo ""
-echo "----------------------------------------------------------------------"
-echo "NOTE: This file is expected to be sourced from the project directory! "
-echo "----------------------------------------------------------------------"
 
-currentDirectory=$(pwd)
-environmentPath="$currentDirectory/env"
+function getScriptDirectory(){
+  
+  local SOURCE="${BASH_SOURCE[0]}"
+  # Go through all symlinks to find the ultimate location of the source file
+  while [ -h "$SOURCE" ] ; do 
+    SOURCE="$(readlink "$SOURCE")"; 
+  done
+  
+  # Get an absolute path to the directory that contains this file
+  local DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  returnValue=$DIR
+}
 
+getScriptDirectory
+scriptDirectory=$returnValue
+returnValue=''
+environmentPath=$(readlink -e "$scriptDirectory/../env")
+
+mudHomeDirectory=$(readlink -e "$scriptDirectory/../")
 echo "Setting up MUD_HOME to point to: $currentDirectory"
-export MUD_HOME=$currentDirectory
+export MUD_HOME=$mudHomeDirectory
 
-echo "Setting up PATH to point to bin directory: $currentDirectory/bin"
-export PATH=$PATH:$currentDirectory/bin
+echo "Setting up PATH to point to bin directory: $scriptDirectory"
+export PATH=$PATH:$scriptDirectory
 
 echo "Activating virtual python environment."
 if [ -d $environmentPath ]; then

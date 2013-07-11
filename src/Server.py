@@ -2,11 +2,16 @@ __author__ = 'M. C. Skinner'
 import threading
 from MessageSender import MessageSender
 from command import CommandQueue
-from Client import Client
+from client import Client
 import logging
 import sys
 
 class Server:
+    messageSender = None
+
+    def __init__(self):
+        self.messageSender = MessageSender()
+
     def start(self):
         self.__initalizeServer()
         pass
@@ -18,10 +23,11 @@ class Server:
         pass
 
 
+
     def __initalizeServer(self):
         self.__initalizeLogging()
         commandHandler = CommandQueue()
-        sendMessageThread = messageSenderThread(MessageSender())
+        sendMessageThread = messageSenderThread(self.messageSender)
         sendMessageThread.start()
         readMessageThread = messageReaderThread(commandHandler, MessageSource())
         readMessageThread.start()
@@ -95,10 +101,10 @@ class messageProcessingThread(threading.Thread):
 
     def run(self):
         while True:
-            command = self.commandHandler.nextCommand()
-            self.logger.info("Processing command.")
+            commandRequest = self.commandHandler.nextCommand()
+            self.logger.info("Processing command: "+commandRequest.rawCommand.rstrip())
+            commandRequest.client.sendMessage("I got your message")
 
-commandLineClient = Client()
 
 class MessageSource:
     def nextMessage(self):
@@ -106,5 +112,7 @@ class MessageSource:
         return commandLineClient, line
 
 server = Server()
+commandLineClient = Client(messageSender = server.messageSender)
+
 server.start()
 
