@@ -1,13 +1,25 @@
+echo"-------------------------------"
 echo "THIS FILE SHOULD BE SOURCED!!!"
+echo "------------------------------"
+echo ""
+echo "----------------------------------------------------------------------"
+echo "NOTE: This file is expected to be sourced from the project directory! "
+echo "----------------------------------------------------------------------"
+
 currentDirectory=$(pwd)
 environmentPath="$currentDirectory/env"
+
+echo "Setting up MUD_HOME to point to: $currentDirectory"
+export MUD_HOME=$currentDirectory
 
 echo "Setting up PATH to point to bin directory: $currentDirectory/bin"
 export PATH=$PATH:$currentDirectory/bin
 
 echo "Activating virtual python environment."
 if [ -d $environmentPath ]; then
-  $environmentPath/bin/activate
+  source $environmentPath/bin/activate
 else
   echo "Could not find environment at: $environmentPath"
 fi
+
+

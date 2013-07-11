@@ -1,0 +1,14 @@
+scriptDirectory="$( cd "$( dirname "$0" )" && pwd )"
+environmentPath=$(readlink -e "$scriptDirectory/../env")
+pythonExecutable=$(readlink -e "$environmentPath/bin/python")
+
+pythonMain=$(readlink -e "$scriptDirectory/../Server.py")
+
+echo "Running mud...."
+startCmd="$pythonExecutable $pythonMain"
+echo "$startCmd"
+
+$startCmd
+
+
+
